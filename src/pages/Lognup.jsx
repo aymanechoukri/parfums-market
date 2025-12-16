@@ -1,12 +1,19 @@
-import React, { useRef, useEffect, useState } from "react";
-import Header from "./Components/Header";
+import React, { useRef, useEffect, useState, useContext } from "react";
+import Header from "../Components/Header";
 import axios from "axios";
+import { Users } from "../Context/Context";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const emailRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [accept, setAccept] = useState(false);
+
+  const nav = useNavigate();
+
+  const userStorge = useContext(Users);
+  console.log(userStorge)
 
   async function toggelSubmit(e) {
     e.preventDefault();
@@ -19,9 +26,13 @@ export default function Signup() {
         email,
         password,
       });
+
+      const token = res.data.data.token;
+      const userAccept = res.data.data.user;
+      userStorge.setAuthe({ token, userAccept });
+
       if (res.status === 200) {
-        window.location.pathname = "/";
-        window.localStorage.setItem("email", email);
+        nav("/dashbord")
       }
     } catch (error) {
       if(error.status === 401) {

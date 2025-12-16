@@ -1,10 +1,7 @@
 import { Link } from "react-router-dom";
 
 export default function Header() {
-  function deleteEmail() {
-    window.location.pathname = "/";
-    window.localStorage.removeItem("email");
-  }
+
   return (
     <header>
       <nav className="flex justify-between items-center bg-slate-950 text-gray-300 px-10 shadow-[0_5px_10px_rgba(0,0,0,0.5)] h-16">
@@ -35,7 +32,7 @@ export default function Header() {
             About
           </li>
         </ul>
-        {!window.localStorage.getItem("email") ? (
+      
           <div className="flex justify-center items-center gap-4">
             <Link
               to={"/signup"}
@@ -49,15 +46,14 @@ export default function Header() {
             >
               Log up
             </Link>
+
+            <Link
+              to={"/dashbord"}
+              className="text-lg font-extrabold hover:text-blue-400 active:text-blue-100 cursor-pointer"
+            >
+              Dashboard
+            </Link>
           </div>
-        ) : (
-          <button
-            onClick={deleteEmail}
-            className="bg-blue-500 px-3 py-1 rounded-2xl hover:bg-blue-400 active:bg-blue-100 text-lg font-extrabold text-gray-300 cursor-pointer"
-          >
-            Log out
-          </button>
-        )}
       </nav>
     </header>
   );
