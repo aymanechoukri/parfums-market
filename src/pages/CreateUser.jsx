@@ -1,10 +1,10 @@
 import React, { useRef, useState, useContext } from "react";
 import axios from "axios";
 import { Users } from "../Context/Context";
-import Header from "../Components/Header";
 import { useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
 
-export default function CreateUser() {
+export default function Signup() {
   const nameRef = useRef(null);
 
   const [name, setName] = useState("");
@@ -14,10 +14,10 @@ export default function CreateUser() {
   const [accept, setAccept] = useState(false);
   const [valide, setValid] = useState(null);
 
-  const userStorge = useContext(Users);
-  console.log(userStorge);
-
   const nav = useNavigate()
+
+  const userStorge = useContext(Users);
+  const token = userStorge.authe.token
 
   async function toggelSubmit(e) {
     e.preventDefault();
@@ -31,16 +31,24 @@ export default function CreateUser() {
         email,
         password,
         password_confirmation: confirm,
-      });
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    
 
-        if(res.status === 200) {
-        nav("/dashbord/users")
+      if(res.status === 200) {
+        nav("/dashbord/users");
       }
     } catch (error) {
       setValid(error.status);
     }
   }
   return (
+
       <div className="flex justify-center items-center h-135 flex-col w-full">
         <form
           action=""
@@ -137,7 +145,7 @@ export default function CreateUser() {
             cursor-pointer
             "
           >
-            Create
+            Create user
           </button>
         </form>
       </div>

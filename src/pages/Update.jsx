@@ -1,11 +1,13 @@
 import React, { useRef, useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { Users } from "../Context/Context";
-import Header from "../Components/Header";
 import { useNavigate } from "react-router-dom";
 
 export default function Update() {
   const nameRef = useRef(null);
+
+    const userStorge = useContext(Users);
+    const token = userStorge.authe.token
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -14,8 +16,6 @@ export default function Update() {
   const [accept, setAccept] = useState(false);
   const [valide, setValid] = useState(null);
 
-  const userStorge = useContext(Users);
-  console.log(userStorge);
 
   const nav = useNavigate()
 
@@ -32,7 +32,13 @@ export default function Update() {
         email,
         password,
         password_confirmation: confirm,
-      });
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
       if(res.status === 200) {
         nav("/dashbord/users")
       }
@@ -42,14 +48,18 @@ export default function Update() {
   }
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/user/showbyid/${id}`)
-    .then(res => res.json())
-    .then(data => {
-      setName(data[0].name)
-      setEmail(data[0].email)
-    }
-    )
-  }, [id])
+  if(!token) return;
+
+  axios.get(`http://127.0.0.1:8000/api/user/showbyid/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  .then(res => {
+    setName(res.data[0].name)
+    setEmail(res.data[0].email)
+  })
+  .catch(err => console.error(err));
+}, [id, token]);
+
   return (
       <div className="flex justify-center items-center h-135 flex-col w-full">
         <form
@@ -147,7 +157,7 @@ export default function Update() {
             cursor-pointer
             "
           >
-            Update
+            Update user
           </button>
         </form>
       </div>

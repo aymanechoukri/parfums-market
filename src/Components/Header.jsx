@@ -1,6 +1,20 @@
+import axios from "axios";
 import { Link } from "react-router-dom";
+import Cookies from "universal-cookie";
 
 export default function Header() {
+  const cookie = new Cookies();
+  const tokenCookie = cookie.get("Bearer");
+
+  async function deleteToken() {
+    await axios.post("http://127.0.0.1:8000/api/logout", null, {
+      headers: {
+        Authorization: `Bearer ${tokenCookie}`,
+      },
+    });
+    window.location.pathname = "/";
+    cookie.remove("Bearer")
+  }
 
   return (
     <header>
@@ -32,28 +46,39 @@ export default function Header() {
             About
           </li>
         </ul>
-      
+
+        {!tokenCookie ? (
           <div className="flex justify-center items-center gap-4">
             <Link
-              to={"/signup"}
+              to="/signup"
               className="bg-blue-500 px-3 py-1 rounded-2xl hover:bg-blue-400 active:bg-blue-100 text-lg font-extrabold text-gray-300 cursor-pointer"
             >
               Register
             </Link>
             <Link
-              to={"/lognup"}
+              to="/lognup"
               className="text-lg font-extrabold hover:text-blue-400 active:text-blue-100 cursor-pointer"
             >
               Log up
             </Link>
-
+          </div>
+        ) : (
+          <div className="flex justify-center items-center gap-4">
             <Link
-              to={"/dashbord"}
-              className="text-lg font-extrabold hover:text-blue-400 active:text-blue-100 cursor-pointer"
+              to="/dashbord"
+              className="bg-blue-500 px-3 py-1 rounded-2xl hover:bg-blue-400 active:bg-blue-100 text-lg font-extrabold text-gray-300 cursor-pointer"
             >
               Dashboard
             </Link>
+
+            <span
+              onClick={deleteToken}
+              className="text-lg font-extrabold hover:text-blue-400 active:text-blue-100 cursor-pointer"
+            >
+              Log out
+            </span>
           </div>
+        )}
       </nav>
     </header>
   );

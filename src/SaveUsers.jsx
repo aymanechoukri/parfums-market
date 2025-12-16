@@ -26,7 +26,7 @@ export default function SaveUsers() {
           .then((data) => {
             console.log(data)
             cookie.set("Bearer", data.data.token);
-            user.setAuthe((prev) => {
+            user.setAuthe(() => {
               return { userStorge: data.data.user, token: data.data.token };
             });
           });
