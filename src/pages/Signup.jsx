@@ -3,6 +3,7 @@ import axios from "axios";
 import { Users } from "../Context/Context";
 import Header from "../Components/Header";
 import { useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
 
 export default function Signup() {
   const nameRef = useRef(null);
@@ -18,6 +19,8 @@ export default function Signup() {
 
   const userStorge = useContext(Users);
   console.log(userStorge);
+
+  const cookie = new Cookies()
 
   async function toggelSubmit(e) {
     e.preventDefault();
@@ -35,6 +38,8 @@ export default function Signup() {
       const token = res.data.data.token;
       const userAccept = res.data.data.user;
       userStorge.setAuthe({ token, userAccept });
+      cookie.set("Bearer", token);
+
 
       if(res.status === 200) {
         nav("/dashbord");
