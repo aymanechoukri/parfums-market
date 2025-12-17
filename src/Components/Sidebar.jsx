@@ -9,9 +9,10 @@ export default function Sidebar() {
             </div>
             
             <nav className="space-y-1">
+
                 <Link 
                     className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-lg transition-all duration-200 font-medium group"
-                    to={"/dashbord"}
+                    to={"/dashboard"}
                 >
                     <div className="w-2 h-2 rounded-full bg-slate-400 group-hover:bg-blue-500 transition-colors"></div>
                     <span>Dashboard</span>

@@ -1,99 +1,74 @@
-import React, { useRef, useState, useContext } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
+import Header from "../Components/Header";
 import axios from "axios";
 import { Users } from "../Context/Context";
-import Header from "../Components/Header";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 
-export default function Signup() {
-  const nameRef = useRef(null);
-
-  const [name, setName] = useState("");
+export default function Login() {
+  const emailRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
   const [accept, setAccept] = useState(false);
-  const [valide, setValid] = useState(null);
 
-  const nav = useNavigate()
+  const nav = useNavigate();
 
   const userStorge = useContext(Users);
-  console.log(userStorge);
 
-  const cookie = new Cookies()
+  const cookie = new Cookies();
 
   async function toggelSubmit(e) {
     e.preventDefault();
-    setAccept(true);
+    setAccept(!accept);
 
-    if (name === "" || password.length < 8 || password !== confirm) return;
+    if (password.length < 8) return;
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/register", {
-        name,
+      const res = await axios.post("http://127.0.0.1:8000/api/login", {
         email,
         password,
-        password_confirmation: confirm,
       });
+
       const token = res.data.data.token;
       const userAccept = res.data.data.user;
       userStorge.setAuthe({ token, userAccept });
       cookie.set("Bearer", token);
 
-
-
-      if(res.status === 200) {
+      if (res.status === 200) {
         nav("/dashboard");
       }
     } catch (error) {
-      setValid(error.status);
+      if (error.status === 401) {
+        alert("This account does not exist");
+      }
     }
   }
+  useEffect(() => {
+    emailRef.current.focus();
+  }, []);
   return (
     <div>
       <Header />
-      <div className="flex justify-center items-center h-135 flex-col w-full">
+      <div className="flex justify-center items-center h-135 flex-col">
         <form
           action=""
           className="flex flex-col gap-2 bg-slate-950 text-gray-400/60 py-5 px-12 w-1/2 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.8)]"
           onSubmit={toggelSubmit}
         >
-          <label
-            htmlFor="full-name"
-            className="text-md font-bold text-white mb-"
-          >
-            Full name:
-          </label>
-          <input
-            ref={nameRef}
-            className="bg-gray-400/20 rounded-2xl py-2 px-5 border border-transparent
-                focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300 text-xl text-gray-300"
-            type="text"
-            id="full-name"
-            name="full-name"
-            value={name ?? ""}
-            onChange={(e) => setName(e.target.value)}
-          />
-          {name === "" && accept && (
-            <p className="text-red-600 text-sm">Please enter your name</p>
-          )}
-
           <label htmlFor="email" className="text-md font-bold text-white mb-">
             Email:
           </label>
           <input
+            ref={emailRef}
             className="bg-gray-400/20 rounded-2xl py-2 px-5 border border-transparent
                 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300 text-xl text-gray-300"
             type="email"
             id="email"
             name="email"
-            value={email ?? ""}
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          {valide === 422 && accept && (
-            <p className="text-red-600 text-sm">This account exists</p>
-          )}
 
           <label
             htmlFor="password"
@@ -112,27 +87,8 @@ export default function Signup() {
           />
           {password.length < 8 && accept && (
             <p className="text-red-600 text-sm">
-              Password must be at least 8 characters long.
+              You must enter the word "strong" consisting of 8 letters.
             </p>
-          )}
-
-          <label
-            htmlFor="confirm-password"
-            className="text-md font-bold text-white "
-          >
-            Confirm password:
-          </label>
-          <input
-            className="bg-gray-400/20 rounded-2xl py-2 px-5 border border-transparent
-                focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300 text-xl text-gray-300"
-            type="password"
-            id="confirm-password"
-            name="confirm"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-          />
-          {password !== confirm && accept && (
-            <p className="text-red-600 text-sm">Not matching</p>
           )}
 
           <button
@@ -148,7 +104,7 @@ export default function Signup() {
             cursor-pointer
             "
           >
-            Register
+            Login
           </button>
         </form>
       </div>

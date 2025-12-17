@@ -2,7 +2,8 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Users as formation } from "./Context/Context";
-import Loiding from "./Components/Loiding";
+
+import Loading from "./Components/Loading";
 import Cookies from "universal-cookie";
 
 export default function SaveUsers() {
@@ -38,5 +39,6 @@ export default function SaveUsers() {
     }
     !token ? refresh() : setLoading(false);
   }, []);
-  return loading ? <Loiding /> : <Outlet />;
+
+  return loading ? <Loading /> : <Outlet />;
 }

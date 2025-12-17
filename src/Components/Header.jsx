@@ -55,17 +55,19 @@ export default function Header() {
             >
               Register
             </Link>
+
             <Link
-              to="/lognup"
+              to="/login"
               className="text-lg font-extrabold hover:text-blue-400 active:text-blue-100 cursor-pointer"
             >
-              Log up
+              Login
             </Link>
           </div>
         ) : (
           <div className="flex justify-center items-center gap-4">
+
             <Link
-              to="/dashbord"
+              to="/dashboard"
               className="bg-blue-500 px-3 py-1 rounded-2xl hover:bg-blue-400 active:bg-blue-100 text-lg font-extrabold text-gray-300 cursor-pointer"
             >
               Dashboard
