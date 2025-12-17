@@ -1,13 +1,37 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Users as formation } from "../Context/Context";
 
 export default function Users() {
-  const user = useContext(formation);
-  const token = user.authe.token;
+  const context = useContext(formation);
+  const token = context?.authe?.token;
   const [users, setUsers] = useState([]);
+  
+  const deletUsers = useCallback(async (id) => {
+    if (!token) {
+      console.error("No token available");
+      return;
+    }
+    
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/user/delete/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUsers((prev) => prev.filter((user) => user.id !== id));
+    } catch (error) {
+      console.error("Delete error:", error);
+    }
+  }, [token]);
+
   useEffect(() => {
+    if (!token) {
+      console.error("No token available for fetching users");
+      return;
+    }
+
     axios
       .get("http://127.0.0.1:8000/api/user/show", {
         headers: {
@@ -16,11 +40,11 @@ export default function Users() {
         },
       })
       .then((res) => setUsers(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Fetch error:", err));
   }, [token]);
 
   const showUsers = users.map((user, index) => (
-    <tr key={index} className="hover:bg-gray-100/20">
+    <tr key={user.id || index} className="hover:bg-gray-100/20">
       <td className="px-6 py-4 border-t border-gray-100/30 text-gray-300">
         {index + 1}
       </td>
@@ -31,7 +55,7 @@ export default function Users() {
         {user.email}
       </td>
       <td className="px-6 py-4 border-t border-gray-100/30 text-gray-300">
-        <Link to={`/dashbord/user/${user.id}`}>
+        <Link to={`/dashboard/user/${user.id}`}>
           <i className="fa-solid fa-pen-to-square text-slate-950 text-1xl cursor-pointer mr-3 hover:text-slate-800 active:text-slate-300"></i>
         </Link>
         <i
@@ -42,18 +66,6 @@ export default function Users() {
     </tr>
   ));
 
-  async function deletUsers(id) {
-    try {
-      await axios.delete(`http://127.0.0.1:8000/api/user/delete/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUsers((prev) => prev.filter((rev) => rev.id !== id));
-    } catch (error) {
-      console.error(error);
-    }
-  }
   return (
     <div className="w-full overflow-x-auto p-6">
       <table className="w-full border border-gray-100/50 rounded-lg overflow-hidden table-auto">

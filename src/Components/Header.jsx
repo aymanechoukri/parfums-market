@@ -7,13 +7,21 @@ export default function Header() {
   const tokenCookie = cookie.get("Bearer");
 
   async function deleteToken() {
-    await axios.post("http://127.0.0.1:8000/api/logout", null, {
-      headers: {
-        Authorization: `Bearer ${tokenCookie}`,
-      },
-    });
-    window.location.pathname = "/";
-    cookie.remove("Bearer")
+    try {
+      await axios.post("http://127.0.0.1:8000/api/logout", null, {
+        headers: {
+          Authorization: `Bearer ${tokenCookie}`,
+        },
+      });
+      
+      cookie.remove("Bearer");
+      window.location.pathname = "/";
+      
+    } catch (error) {
+      console.error("Logout error:", error);
+      cookie.remove("Bearer");
+      window.location.pathname = "/";
+    }
   }
 
   return (
